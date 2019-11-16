@@ -2,12 +2,36 @@
 
 {% block sidebar_content %}
 <li>
-    <a href="#" class="active">Operativo 1</a>
+    <a href="#destinoSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Destinos</a>
+    <ul class="collapse list-unstyled" id="destinoSubmenu">
+        <li>
+            <a href="#">Registro</a>
+        </li>
+        <li>
+            <a href="#">Control</a>
+        </li>
+    </ul>
 </li>
 <li>
-    <a href="#">Operativo 2</a>
+    <a href="#hospedajeSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Hospedajes</a>
+    <ul class="collapse list-unstyled" id="hospedajeSubmenu">
+        <li>
+            <a href="#">Registro</a>
+        </li>
+        <li>
+            <a href="#">Control</a>
+        </li>
+    </ul>
 </li>
 <li>
-    <a href="#">Operativo 3</a>
+    <a href="#vehiculoSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Vehiculos</a>
+    <ul class="collapse list-unstyled" id="vehiculoSubmenu">
+        <li>
+            <a href="{%url 'registrar_vehiculo'%}">Registro</a>
+        </li>
+        <li>
+            <a href="#">Control</a>
+        </li>
+    </ul>
 </li>
 {%endblock%}

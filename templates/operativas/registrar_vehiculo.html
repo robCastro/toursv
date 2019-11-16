@@ -1,0 +1,26 @@
+{% extends 'base/base_operativa.html'%}
+
+{% block titulo %}Registro de Vehiculo{% endblock %}
+
+{% block main_content %}
+<div class="row">
+	<div class="col-md-8">
+		<h4>Registro de Vehiculo</h4>
+		<br>
+		<form method="POST" action="{%url 'registrar_vehiculo'%}">
+			{% csrf_token %}
+			<table class="ml-3">
+				{{form.as_table}}
+			</table>
+			<br>
+			<input type="submit" name="submit" value="Guardar">
+		</form>
+		<br><br><br>
+	</div>
+	{% if form.subject.errors %}
+	<div class="col-md-4">
+		{{ form.name_of_field.errors }}
+	</div>
+	{% endif %}
+</div>
+{% endblock %}
