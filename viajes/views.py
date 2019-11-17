@@ -4,9 +4,9 @@ from datetime import datetime, timedelta
 from django.db import connection
 from wkhtmltopdf.views import PDFTemplateView
 
-from .forms import TransporteForm, DestinoForm
+from .forms import TransporteForm, DestinoForm, HospedajeForm
 
-from .models import Transporte, Destino
+from .models import Transporte, Destino, Hospedaje
 
 def index(request):
 	context = {}
@@ -175,7 +175,6 @@ class RepControlDestinos(PDFTemplateView):
 		context['destinos'] = consultaDestinos(fechaInicio, fechaFin, tipo, departamento)
 		return context
 
-
 def consultaDestinos(fechaInicio, fechaFin, tipo, departamento):
 	if tipo == "Todos":
 		tipo = None
@@ -189,3 +188,27 @@ def consultaDestinos(fechaInicio, fechaFin, tipo, departamento):
 	if (fechaInicio and fechaFin):
 		destinos = destinos.filter(fecha_registro_destino__range=(fechaInicio, fechaFin))
 	return destinos
+
+
+
+def registrarHospedaje(request):
+	msg = None
+	if request.method == 'POST':
+		form = HospedajeForm(request.POST)
+		if form.is_valid():
+			hospedaje = Hospedaje.objects.create(
+				nombre_hospedaje = form.cleaned_data['nombre_hospedaje'],
+				direccion_hospedaje = form.cleaned_data['direccion_hospedaje'],
+				telefono_hospedaje = form.cleaned_data['telefono_hospedaje'],
+				estrellas_hospedaje = form.cleaned_data['estrellas_hospedaje'],
+			)
+			msg = "Guardado correctamente"
+		#else:
+			#return HttpResponse('Error')
+	else:
+		form = HospedajeForm()
+	context = {
+		'form': form,
+		'msg': msg
+	}
+	return render(request, 'operativas/registrar_hospedaje.html', context)

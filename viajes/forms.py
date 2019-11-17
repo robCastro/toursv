@@ -1,4 +1,5 @@
 from django import forms
+from django.core.validators import RegexValidator
 
 class TransporteForm(forms.Form):
 	placa = forms.CharField(label='Placa del Vehiculo', max_length=100)
@@ -34,3 +35,10 @@ class DestinoForm(forms.Form):
 	nombre_destino = forms.CharField(label='Nombre', max_length=100)
 	tipo_destino = forms.ChoiceField(label='Tipo', choices=opcionesTipo)
 	departamento_destino = forms.ChoiceField(label='Departamento', choices=opcionesDepartamento)
+
+class HospedajeForm(forms.Form):
+	telefonoValidator = RegexValidator(r'^\d{4}-\d{4}$', 'Usar formato 9999-9999.')
+	nombre_hospedaje = forms.CharField(label='Nombre', max_length=1024)
+	direccion_hospedaje = forms.CharField(label='Direccion', max_length=1024)
+	telefono_hospedaje = forms.CharField(label='Telefono', max_length=10, validators=[telefonoValidator])
+	estrellas_hospedaje = forms.IntegerField(label='Estrellas', min_value = 1, max_value=5)

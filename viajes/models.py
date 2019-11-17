@@ -60,6 +60,7 @@ class Hospedaje(models.Model):
     nombre_hospedaje = models.CharField(max_length=1024)
     direccion_hospedaje = models.CharField(max_length=1024)
     telefono_hospedaje = models.CharField(max_length=10)
+    estrellas_hospedaje = models.IntegerField()
 
     class Meta:
         managed = False
