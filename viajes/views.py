@@ -325,3 +325,61 @@ def consultaNotaPublicistas(fechaInicio, fechaFin):
 
 
 
+def controlFechaDestino(request):
+	preview = True
+	fechaFin = datetime.now().date()
+	fechaInicio = fechaFin - timedelta(days=90)
+	destinos = None
+	errores = []
+	if request.method == 'POST':
+		fechaInicio = datetime.strptime(request.POST['fechaI'], '%Y-%m-%d')
+		fechaFin = datetime.strptime(request.POST['fechaF'], '%Y-%m-%d')
+		if fechaInicio > fechaFin:
+			errores.append("Fecha de Inicio no puede ser mayor a Fecha de Fin")
+		else:
+			destinos = consultaFechaDestino(fechaInicio, fechaFin)
+			if not destinos:
+				errores.append("No hay registros para esta busqueda")
+			if request.POST['submit'] == 'Generar' and destinos:
+				preview = False
+	context = {
+		'fechaInicio': fechaInicio,
+		'fechaFin': fechaFin,
+		'destinos': destinos,
+		'errores': errores,
+	}
+	if preview:
+		return render(request, 'operativas/control_fechas.html', context)
+	else:
+		return redirect('pdf_fechas', request.POST['fechaI'], request.POST['fechaF'])
+		
+class RepControlFechaDestino(PDFTemplateView):
+	filename = 'control_fechas.pdf'
+	template_name = 'operativas/reporte_fechas.html'
+	show_content_in_browser=True
+	def get_context_data(self, **kwargs):
+		context = super(RepControlFechaDestino, self).get_context_data(**kwargs)
+		fechaInicio = datetime.strptime(self.kwargs['fechaInicio'], '%Y-%m-%d')
+		fechaFin = datetime.strptime(self.kwargs['fechaFin'], '%Y-%m-%d')
+		context['fechaHoy'] = datetime.now().date()
+		context['fechaInicio'] = fechaInicio
+		context['fechaFin'] = fechaFin
+		context['destinos'] = consultaFechaDestino(fechaInicio, fechaFin)
+		return context
+
+def consultaFechaDestino(fechaInicio, fechaFin):
+	with connection.cursor() as cursor:
+		cursor.execute("""
+    		select tipo_destino, count(reservan.id_van_a), coalesce(sum(precio_excursion), 0) from destino
+			left outer join excursion on excursion.id_destino = destino.id_destino
+				and fecha_inicio_excursion >= '{}'
+				and fecha_inicio_excursion <= '{}'
+			left outer join reservan on excursion.id_excursion = reservan.id_excursion
+			group by tipo_destino
+			""".format(
+				datetime.strftime(fechaInicio, '%Y-%m-%d'),
+				datetime.strftime(fechaFin, '%Y-%m-%d')
+			) 
+		)
+		return cursor.fetchall()
+

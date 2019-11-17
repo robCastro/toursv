@@ -33,4 +33,10 @@ urlpatterns = [
 		name = 'pdf_publicistas'
 	),
 
+	path('control_fecha/', views.controlFechaDestino, name='control_fecha'),
+    path('pdf_fechas/(<fechaInicio>)/(<fechaFin>)/',
+		views.RepControlFechaDestino.as_view(),
+		name = 'pdf_fechas'
+	),
+
 ]

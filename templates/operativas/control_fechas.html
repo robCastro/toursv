@@ -1,33 +1,19 @@
 {% extends 'base/base_operativa.html'%}
 
-{% block titulo %}Control de Vehiculos{% endblock %}
+{% block titulo %}Control de Fechas y Destinos{% endblock %}
 
 {% block main_content %}
 
 
 <div class="row">
-	<h4>Control de Vehiculos</h4>
+	<h4>Control de Fechas y Destinos</h4>
 </div>
 <br>
 <div class="row">
 	<div class="col-md8">
-		<form method="post" action="{%url 'control_vehiculos'%}">
+		<form method="post" action="{%url 'control_fecha'%}">
 		{% csrf_token %}
 		<table class="mx-3">
-			<tr>
-				<th><label for="tipo">Tipo:</label></th>
-				<td>
-					<select name="tipo" class="form-control"	>
-						<option value="Sedan"{% if tipo in "Sedan" %}selected{% endif %}>Sedan</option>
-						<option value="Pick up"{% if tipo in "Pick up" %}selected{% endif %}>Pick up</option>
-						<option value="Camioneta"{% if tipo in "Camioneta" %}selected{% endif %}>Camioneta</option>
-						<option value="Micro bus"{% if tipo in "Micro bus" %}selected{% endif %}>Micro bus</option>
-						<option value="Buseta"{% if tipo in "Buseta" %}selected{% endif %}>Buseta</option>
-						<option value="Bus"{% if tipo in "Bus" %}selected{% endif %}>Bus</option>
-						<option value="Otro"{% if tipo in "Otro" %}selected{% endif %}>Otro</option>
-					</select>
-				</td>
-			</tr>
 			<tr>
 				<th><label for="fechaI">Fecha de Inicio de Salida de Excursion</label></th>
 				<td><input type="date" name="fechaI" class="form-control" value="{{fechaInicio|date:'Y-m-d'}}" required=""></td>
@@ -60,26 +46,24 @@
 	{% endif %}
 </div>
 <br>
-{% if vehiculos %}
+{% if destinos %}
 <br><br>
 <div class="row">
-	<h4>Vehiculos</h4>
+	<h4>Resultados</h4>
 </div>
 <br>
 <div class="row">
 	<table class="table">
 		<tr>
-			<th>Placa</th>
-			<th>Fecha de Salida</th>
-			<th>Fecha de Retorno</th>
-			<th>Hospedaje</th>
-			<th>Direccion</th>
+			<th>Tipo Destino</th>
+			<th>Cantidad de Viajes</th>
+			<th>Ganancia Generada</th>
 		</tr>
-		{% for vehiculo in vehiculos %}
+		{% for destino in destinos %}
 			<tr>
-				{% for elemento in vehiculo %}
-					<td>{{elemento}}</td>
-				{% endfor %}
+				<td>{{destino.0}}</td>
+				<td>{{destino.1}}</td>
+				<td>{{destino.2}}</td>
 			</tr>
 		{% endfor %}
 	</table>

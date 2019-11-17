@@ -1,0 +1,33 @@
+{% extends "base/base_reporte.html" %}
+
+{% block titulo-reporte %}
+    Reporte de Fechas y Destinos
+{% endblock titulo-reporte %}
+
+{% block subtitulo-reporte %}
+    Generado el {{fechaHoy|date:"d-m-Y"}}.
+    <p class="texto-sub" style="text-align: center;">Desde el {{fechaInicio|date:"d-m-Y"}}, Hasta el {{fechaFin|date:"d-m-Y"}}</p>
+    
+{% endblock subtitulo-reporte %}
+
+{% block contenido-reporte %}
+    
+    <table class="table" style="text-align: center">
+        <thead>
+        <tr>
+            <th>Tipo Destino</th>
+            <th>Cantidad de Viajes</th>
+            <th>Ganancia Generada</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for destino in destinos %}
+            <tr>
+                <td>{{destino.0}}</td>
+                <td>{{destino.1}}</td>
+                <td>${{destino.2}}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock contenido-reporte %}
