@@ -76,6 +76,7 @@ class RepControlVehiculos(PDFTemplateView):
 		context['fechaHoy'] = datetime.now().date()
 		context['fechaInicio'] = fechaInicio
 		context['fechaFin'] = fechaFin
+		context['tipo'] = tipo
 		context['vehiculos'] = consultaVehiculosExcursiones(fechaInicio, fechaFin, tipo)
 		return context
 
@@ -122,3 +123,69 @@ def registrarDestino(request):
 	}
 	return render(request, 'operativas/registrar_destino.html', context)
 
+def controlDestino(request):
+	preview = True
+	fechaFin = datetime.now().date()
+	fechaInicio = fechaFin - timedelta(days=30)
+	tipo = "Montaña"
+	departamento = "Ahuachapan"
+	destinos = None
+	errores = []
+	if request.method == 'POST':
+		fechaInicio = datetime.strptime(request.POST['fechaI'], '%Y-%m-%d')
+		fechaFin = datetime.strptime(request.POST['fechaF'], '%Y-%m-%d')
+		if fechaInicio > fechaFin:
+			errores.append("Fecha de Inicio no puede ser mayor a Fecha de Fin")
+		else:
+			tipo = request.POST['tipo']
+			departamento = request.POST['departamento']
+			destinos = consultaDestinos(fechaInicio, fechaFin, tipo, departamento)
+			if not destinos:
+				errores.append("No hay Destinos para esta busqueda")
+			if request.POST['submit'] == 'Generar' and destinos:
+				preview = False
+	context = {
+		'fechaInicio': fechaInicio,
+		'fechaFin': fechaFin,
+		'tipo': tipo,
+		'departamento': departamento,
+		'destinos': destinos,
+		'errores': errores,
+	}
+	if preview:
+		return render(request, 'operativas/control_destinos.html', context)
+	else:
+		return redirect('pdf_destinos', fechaInicio.date(), fechaFin.date(), tipo, departamento)
+
+class RepControlDestinos(PDFTemplateView):
+	filename = 'control_destinos.pdf'
+	template_name = 'operativas/reporte_destinos.html'
+	show_content_in_browser=True
+	def get_context_data(self, **kwargs):
+		context = super(RepControlDestinos, self).get_context_data(**kwargs)
+		fechaInicio = datetime.strptime(self.kwargs['fechaInicio'], '%Y-%m-%d')
+		fechaFin = datetime.strptime(self.kwargs['fechaFin'], '%Y-%m-%d')
+		tipo = self.kwargs['tipo']
+		departamento = self.kwargs['departamento']
+		context['fechaHoy'] = datetime.now().date()
+		context['fechaInicio'] = fechaInicio
+		context['fechaFin'] = fechaFin
+		context['tipo'] = tipo
+		context['departamento'] = departamento
+		context['destinos'] = consultaDestinos(fechaInicio, fechaFin, tipo, departamento)
+		return context
+
+
+def consultaDestinos(fechaInicio, fechaFin, tipo, departamento):
+	if tipo == "Todos":
+		tipo = None
+	if departamento == "Todos":
+		departamento = None
+	destinos = Destino.objects.all()
+	if (tipo):
+		destinos = destinos.filter(tipo_destino = tipo)
+	if (departamento):
+		destinos = destinos.filter(departamento_destino = departamento)
+	if (fechaInicio and fechaFin):
+		destinos = destinos.filter(fecha_registro_destino__range=(fechaInicio, fechaFin))
+	return destinos

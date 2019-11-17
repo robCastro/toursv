@@ -14,9 +14,9 @@ urlpatterns = [
 
 
 	path('registrar_destino/', views.registrarDestino, name='registrar_destino'),
-    #path('control_vehiculos/', views.controlVehiculo, name='control_vehiculos'),
-    #path('pdf_vehiculos/(<fechaInicio>)/(<fechaFin>)/(<tipo>)/',
-	#	views.RepControlVehiculos.as_view(),
-#		name = 'pdf_vehiculo'
-#	)
+    path('control_destinos/', views.controlDestino, name='control_destinos'),
+    path('pdf_destinos/(<fechaInicio>)/(<fechaFin>)/(<tipo>)/(<departamento>)/',
+		views.RepControlDestinos.as_view(),
+		name = 'pdf_destinos'
+	)
 ]

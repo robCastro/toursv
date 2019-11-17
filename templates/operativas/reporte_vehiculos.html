@@ -6,9 +6,13 @@
 
 {% block subtitulo-reporte %}
     Generado el {{fechaHoy|date:"d-m-Y"}}.
+    <p class="texto-sub" style="text-align: center;">Desde el {{fechaInicio|date:"d-m-Y"}}, Hasta el {{fechaFin|date:"d-m-Y"}}</p>
+    
+    <p class="texto-sub" style="text-align: center;">Tipo: {{tipo}}</p>
 {% endblock subtitulo-reporte %}
 
 {% block contenido-reporte %}
+    
     <table class="table" style="text-align: center">
         <thead>
         <tr>
@@ -29,5 +33,6 @@
                 <td>{{vehiculo.4}}</td>
             </tr>
         {% endfor %}
+        </tbody>
     </table>
 {% endblock contenido-reporte %}

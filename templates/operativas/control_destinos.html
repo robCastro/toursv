@@ -1,0 +1,236 @@
+{% extends 'base/base_operativa.html'%}
+
+{% block titulo %}Control de Destinos{% endblock %}
+
+{% block main_content %}
+
+
+<div class="row">
+	
+</div>
+
+<div class="row">
+	<div class="col-md8">
+		<form method="post" action="{%url 'control_destinos'%}">
+		{% csrf_token %}
+		<table class="mx-3">
+			<tr>
+				<th><label for="tipo">Tipo:</label></th>
+				<td>
+					<select name="tipo" class="form-control">
+						<option 
+							value="Montaña"
+							{% if tipo in "Montaña" %}
+								selected
+							{% endif %}>
+								Montaña
+						</option>
+						<option 
+							value="Playa"
+							{% if tipo in "Playa" %}
+								selected
+							{% endif %}>
+								Playa
+						</option>
+						<option 
+							value="Ruinas"
+							{% if tipo in "Ruinas" %}
+								selected
+							{% endif %}>
+								Ruinas
+						</option>
+						<option 
+							value="Valle"
+							{% if tipo in "Valle" %}
+								selected
+							{% endif %}>
+								Valle
+						</option>
+						<option 
+							value="Pueblo"
+							{% if tipo in "Pueblo" %}
+								selected
+							{% endif %}>
+								Pueblo
+						</option>
+						<option 
+							value="Todos"
+							{% if tipo in "Todos" %}
+								selected
+							{% endif %}>
+								Todos
+						</option>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<th><label for="departamento">Departamento:</label></th>
+				<td>
+					<select name="departamento" class="form-control">
+						<option 
+							value="Ahuachapan"
+							{% if departamento in "Ahuachapan" %}
+								selected
+							{% endif %}>
+								Ahuachapan
+						</option>
+						<option 
+							value="Cabañas"
+							{% if departamento in "Cabañas" %}
+								selected
+							{% endif %}>
+								Cabañas
+						</option>
+						<option 
+							value="Chalatenango"
+							{% if departamento in "Chalatenango" %}
+								selected
+							{% endif %}>
+								Chalatenango
+						</option>
+						<option 
+							value="Cuscatlan"
+							{% if departamento in "Cuscatlan" %}
+								selected
+							{% endif %}>
+								Cuscatlan
+						</option>
+						<option 
+							value="La Libertad"
+							{% if departamento in "La Libertad" %}
+								selected
+							{% endif %}>
+								La Libertad
+						</option>
+						<option 
+							value="La Paz"
+							{% if departamento in "La Paz" %}
+								selected
+							{% endif %}>
+								La Paz
+						</option>
+						<option 
+							value="La Union"
+							{% if departamento in "La Union" %}
+								selected
+							{% endif %}>
+								La Union
+						</option>
+						<option 
+							value="Morazan"
+							{% if departamento in "Morazan" %}
+								selected
+							{% endif %}>
+								Morazan
+						</option>
+						<option 
+							value="San Miguel"
+							{% if departamento in "San Miguel" %}
+								selected
+							{% endif %}>
+								San Miguel
+						</option>
+						<option 
+							value="San Salvador"
+							{% if departamento in "San Salvador" %}
+								selected
+							{% endif %}>
+								San Salvador
+						</option>
+						<option 
+							value="San Vicente"
+							{% if departamento in "San Vicente" %}
+								selected
+							{% endif %}>
+								San Vicente
+						</option>
+						<option 
+							value="Santa Ana"
+							{% if departamento in "Santa Ana" %}
+								selected
+							{% endif %}>
+								Santa Ana
+						</option>
+						<option 
+							value="Sonsonate"
+							{% if departamento in "Sonsonate" %}
+								selected
+							{% endif %}>
+								Sonsonate
+						</option>
+						<option 
+							value="Usulutan"
+							{% if departamento in "Usulutan" %}
+								selected
+							{% endif %}>
+								Usulutan
+						</option>
+						<option 
+							value="Todos"
+							{% if departamento in "Todos" %}
+								selected
+							{% endif %}>
+								Todos
+						</option>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<th><label for="fechaI">Registrado despues de</label></th>
+				<td><input type="date" name="fechaI" class="form-control" value="{{fechaInicio|date:'Y-m-d'}}" required=""></td>
+			</tr>
+			<tr>
+				<th><label for="fechaF">Y antes de</label></th>
+				<td><input type="date" name="fechaF" class="form-control" value="{{fechaFin|date:'Y-m-d'}}" required=""></td>
+			</tr>
+		</table>
+		<br>
+		<input type="submit" name="submit" value="Buscar">
+		<input type="submit" name="submit" value="Generar">
+		</form>
+	</div>
+	{% if errores %}
+	<div class="col-md4 mx-auto">
+		<div class="alert alert-warning alert-dismissible fade show" role="alert">
+			<strong>Error!</strong>
+			<ul>
+				{% for error in errores %}
+					<li>{{error}}</li>
+				{% endfor %}
+				
+			</ul>
+			<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+			</button>
+		</div>
+	</div>
+	{% endif %}
+</div>
+<br>
+{% if destinos %}
+<br><br>
+<div class="row">
+	<h4>Destinos</h4>
+</div>
+<br>
+<div class="row">
+	<table class="table">
+		<tr>
+			<th>Nombre</th>
+			<th>Tipo</th>
+			<th>Departamento</th>
+			<th>Fecha de Registro</th>
+		</tr>
+		{% for destino in destinos %}
+			<tr>
+				<td>{{destino.nombre_destino}}</td>
+				<td>{{destino.tipo_destino}}</td>
+				<td>{{destino.departamento_destino}}</td>
+				<td>{{destino.fecha_registro_destino}}</td>
+			</tr>
+		{% endfor %}
+	</table>
+	<br>
+</div>
+{% endif %}
+{% endblock %}
