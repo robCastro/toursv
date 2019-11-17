@@ -1,0 +1,90 @@
+{% extends 'base/base_operativa.html'%}
+
+{% block titulo %}Control de Vehiculo{% endblock %}
+
+{% block main_content %}
+
+
+<div class="row">
+	
+</div>
+
+<div class="row">
+	<div class="col-md8">
+		<form method="post" action="{%url 'control_vehiculos'%}">
+		{% csrf_token %}
+		<table class="mx-3">
+			<tr>
+				<th><label for="tipo">Tipo:</label></th>
+				<td>
+					<select name="tipo" class="form-control"	>
+						<option value="Sedan"{% if tipo in "Sedan" %}selected{% endif %}>Sedan</option>
+						<option value="Pick up"{% if tipo in "Pick up" %}selected{% endif %}>Pick up</option>
+						<option value="Camioneta"{% if tipo in "Camioneta" %}selected{% endif %}>Camioneta</option>
+						<option value="Micro bus"{% if tipo in "Micro bus" %}selected{% endif %}>Micro bus</option>
+						<option value="Buseta"{% if tipo in "Buseta" %}selected{% endif %}>Buseta</option>
+						<option value="Bus"{% if tipo in "Bus" %}selected{% endif %}>Bus</option>
+						<option value="Otro"{% if tipo in "Otro" %}selected{% endif %}>Otro</option>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<th><label for="fechaI">Fecha de Inicio de Salida de Excursion</label></th>
+				<td><input type="date" name="fechaI" class="form-control" value="{{fechaInicio|date:'Y-m-d'}}" required=""></td>
+			</tr>
+			<tr>
+				<th><label for="fechaF">Fecha de Fin de Salida de Excursion</label></th>
+				<td><input type="date" name="fechaF" class="form-control" value="{{fechaFin|date:'Y-m-d'}}" required=""></td>
+			</tr>
+		</table>
+		<br>
+		<input type="submit" name="submit" value="Buscar">
+		<input type="submit" name="submit" value="Generar">
+		</form>
+	</div>
+	{% if errores %}
+	<div class="col-md4 mx-auto">
+		<div class="alert alert-warning alert-dismissible fade show" role="alert">
+			<strong>Error!</strong>
+			<ul>
+				{% for error in errores %}
+					<li>{{error}}</li>
+				{% endfor %}
+				
+			</ul>
+			<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+			</button>
+		</div>
+	</div>
+	{% endif %}
+</div>
+<br>
+{% if vehiculos %}
+<br><br>
+<div class="row">
+	<h4>Vehiculos</h4>
+</div>
+<br>
+<div class="row">
+	<table class="table">
+		<tr>
+			<th>Placa</th>
+			<th>Fecha de Salida</th>
+			<th>Fecha de Retorno</th>
+			<th>Hospedaje</th>
+			<th>Direccion</th>
+		</tr>
+		{% for vehiculo in vehiculos %}
+			<tr>
+				{% for elemento in vehiculo %}
+					<td>{{elemento}}</td>
+				{% endfor %}
+			</tr>
+		{% endfor %}
+	</table>
+	<input type="submit" name="pdf" value="Generar">
+	<br>
+</div>
+{% endif %}
+{% endblock %}
