@@ -21,9 +21,9 @@ urlpatterns = [
 	),
 
 	path('registrar_hospedaje/', views.registrarHospedaje, name='registrar_hospedaje'),
-    #path('control_destinos/', views.controlDestino, name='control_destinos'),
-    #path('pdf_destinos/(<fechaInicio>)/(<fechaFin>)/(<tipo>)/(<departamento>)/',
-	#	views.RepControlDestinos.as_view(),
-	#	name = 'pdf_destinos'
-	#)
+    path('control_hospedajes/', views.controlHospedaje, name='control_hospedajes'),
+    path('pdf_hospedajes/(<estrellas>)/(<departamento>)/',
+		views.RepControlHospedajes.as_view(),
+		name = 'pdf_hospedajes'
+	)
 ]

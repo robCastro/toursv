@@ -201,10 +201,9 @@ def registrarHospedaje(request):
 				direccion_hospedaje = form.cleaned_data['direccion_hospedaje'],
 				telefono_hospedaje = form.cleaned_data['telefono_hospedaje'],
 				estrellas_hospedaje = form.cleaned_data['estrellas_hospedaje'],
+				departamento_hospedaje = form.cleaned_data['departamento_hospedaje'],
 			)
-			msg = "Guardado correctamente"
-		#else:
-			#return HttpResponse('Error')
+			msg = "Guardado correctamente"			
 	else:
 		form = HospedajeForm()
 	context = {
@@ -212,3 +211,51 @@ def registrarHospedaje(request):
 		'msg': msg
 	}
 	return render(request, 'operativas/registrar_hospedaje.html', context)
+
+def controlHospedaje(request):
+	preview = True
+	estrellas = "5"
+	departamento = "Ahuachapan"
+	hospedajes = None
+	errores = []
+	if request.method == 'POST':
+		estrellas = request.POST['estrellas']
+		departamento = request.POST['departamento']
+		hospedajes = consultaHospedajes(departamento, estrellas)
+		if not hospedajes:
+			errores.append("No hay hospedajes para esta busqueda")
+		if request.POST['submit'] == 'Generar' and hospedajes:
+			preview = False
+	context = {
+		'estrellas': estrellas,
+		'departamento': departamento,
+		'hospedajes': hospedajes,
+		'errores': errores,
+	}
+	if preview:
+		return render(request, 'operativas/control_hospedajes.html', context)
+	else:
+		return redirect('pdf_hospedajes', estrellas, departamento)
+
+class RepControlHospedajes(PDFTemplateView):
+	filename = 'control_hospedajes.pdf'
+	template_name = 'operativas/reporte_hospedajes.html'
+	show_content_in_browser=True
+	def get_context_data(self, **kwargs):
+		context = super(RepControlHospedajes, self).get_context_data(**kwargs)
+		estrellas = self.kwargs['estrellas']
+		departamento = self.kwargs['departamento']
+		context['fechaHoy'] = datetime.now().date()
+		context['estrellas'] = estrellas
+		context['departamento'] = departamento
+		context['hospedajes'] = consultaHospedajes(departamento, estrellas)
+		return context
+
+def consultaHospedajes(departamento, estrellas):
+	hospedajes = Hospedaje.objects.all()
+	if departamento != "Todos":
+		hospedajes = hospedajes.filter(departamento_hospedaje = departamento)
+	if estrellas != "Todas":
+		hospedajes = hospedajes.filter(estrellas_hospedaje = estrellas)
+	return hospedajes
+

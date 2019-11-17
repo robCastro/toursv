@@ -1,0 +1,230 @@
+{% extends 'base/base_operativa.html'%}
+
+{% block titulo %}Control de Destinos{% endblock %}
+
+{% block main_content %}
+
+
+<div class="row">
+	
+</div>
+
+<div class="row">
+	<div class="col-md8">
+		<form method="post" action="{%url 'control_hospedajes'%}">
+		{% csrf_token %}
+		<table class="mx-3">
+			<tr>
+				<th><label for="estrellas">Estrellas:</label></th>
+				<td>
+					<select name="estrellas" class="form-control">
+						<option 
+							value="1"
+							{% if estrellas in "1" %}
+								selected
+							{% endif %}>
+								1
+						</option>
+						<option 
+							value="2"
+							{% if estrellas in "2" %}
+								selected
+							{% endif %}>
+								2
+						</option>
+						<option 
+							value="3"
+							{% if estrellas in "3" %}
+								selected
+							{% endif %}>
+								3
+						</option>
+						<option 
+							value="4"
+							{% if estrellas in "4" %}
+								selected
+							{% endif %}>
+								4
+						</option>
+						<option 
+							value="5"
+							{% if estrellas in "5" %}
+								selected
+							{% endif %}>
+								5
+						</option>
+						<option 
+							value="Todas"
+							{% if estrellas in "Todas" %}
+								selected
+							{% endif %}>
+								Todos
+						</option>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<th><label for="departamento">Departamento:</label></th>
+				<td>
+					<select name="departamento" class="form-control">
+						<option 
+							value="Ahuachapan"
+							{% if departamento in "Ahuachapan" %}
+								selected
+							{% endif %}>
+								Ahuachapan
+						</option>
+						<option 
+							value="Cabañas"
+							{% if departamento in "Cabañas" %}
+								selected
+							{% endif %}>
+								Cabañas
+						</option>
+						<option 
+							value="Chalatenango"
+							{% if departamento in "Chalatenango" %}
+								selected
+							{% endif %}>
+								Chalatenango
+						</option>
+						<option 
+							value="Cuscatlan"
+							{% if departamento in "Cuscatlan" %}
+								selected
+							{% endif %}>
+								Cuscatlan
+						</option>
+						<option 
+							value="La Libertad"
+							{% if departamento in "La Libertad" %}
+								selected
+							{% endif %}>
+								La Libertad
+						</option>
+						<option 
+							value="La Paz"
+							{% if departamento in "La Paz" %}
+								selected
+							{% endif %}>
+								La Paz
+						</option>
+						<option 
+							value="La Union"
+							{% if departamento in "La Union" %}
+								selected
+							{% endif %}>
+								La Union
+						</option>
+						<option 
+							value="Morazan"
+							{% if departamento in "Morazan" %}
+								selected
+							{% endif %}>
+								Morazan
+						</option>
+						<option 
+							value="San Miguel"
+							{% if departamento in "San Miguel" %}
+								selected
+							{% endif %}>
+								San Miguel
+						</option>
+						<option 
+							value="San Salvador"
+							{% if departamento in "San Salvador" %}
+								selected
+							{% endif %}>
+								San Salvador
+						</option>
+						<option 
+							value="San Vicente"
+							{% if departamento in "San Vicente" %}
+								selected
+							{% endif %}>
+								San Vicente
+						</option>
+						<option 
+							value="Santa Ana"
+							{% if departamento in "Santa Ana" %}
+								selected
+							{% endif %}>
+								Santa Ana
+						</option>
+						<option 
+							value="Sonsonate"
+							{% if departamento in "Sonsonate" %}
+								selected
+							{% endif %}>
+								Sonsonate
+						</option>
+						<option 
+							value="Usulutan"
+							{% if departamento in "Usulutan" %}
+								selected
+							{% endif %}>
+								Usulutan
+						</option>
+						<option 
+							value="Todos"
+							{% if departamento in "Todos" %}
+								selected
+							{% endif %}>
+								Todos
+						</option>
+					</select>
+				</td>
+			</tr>
+		</table>
+		<br>
+		<input type="submit" name="submit" value="Buscar">
+		<input type="submit" name="submit" value="Generar">
+		</form>
+	</div>
+	{% if errores %}
+	<div class="col-md4 mx-auto">
+		<div class="alert alert-warning alert-dismissible fade show" role="alert">
+			<strong>Error!</strong>
+			<ul>
+				{% for error in errores %}
+					<li>{{error}}</li>
+				{% endfor %}
+				
+			</ul>
+			<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+			</button>
+		</div>
+	</div>
+	{% endif %}
+</div>
+<br>
+{% if hospedajes %}
+<br><br>
+<div class="row">
+	<h4>Hospedajes</h4>
+</div>
+<br>
+<div class="row">
+	<table class="table">
+		<tr>
+			<th>Nombre</th>
+			<th>Direccion</th>
+			<th>Telefono</th>
+			<th>Estrellas</th>
+			<th>Departamento</th>
+		</tr>
+		{% for hospedaje in hospedajes %}
+			<tr>
+				<td>{{hospedaje.nombre_hospedaje}}</td>
+				<td>{{hospedaje.direccion_hospedaje}}</td>
+				<td>{{hospedaje.telefono_hospedaje}}</td>
+				<td>{{hospedaje.estrellas_hospedaje}}</td>
+				<td>{{hospedaje.departamento_hospedaje}}</td>
+			</tr>
+		{% endfor %}
+	</table>
+	<br>
+</div>
+{% endif %}
+{% endblock %}

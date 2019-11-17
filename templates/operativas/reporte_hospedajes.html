@@ -1,0 +1,40 @@
+{% extends "base/base_reporte.html" %}
+
+{% block titulo-reporte %}
+    Reporte de Control de Hospedajes
+{% endblock titulo-reporte %}
+
+{% block subtitulo-reporte %}
+    Generado el {{fechaHoy|date:"d-m-Y"}}.
+    <p class="texto-sub" style="text-align: center;">
+        Estrellas: {{estrellas}}, 
+        Departamento: {{departamento}}
+    </p>
+    <p class="texto-sub" style="text-align: center;"></p>
+{% endblock subtitulo-reporte %}
+
+{% block contenido-reporte %}
+    
+    <table class="table" style="text-align: center">
+        <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Direccion</th>
+            <th>Telefono</th>
+            <th>Estrellas</th>
+            <th>Departamento</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for hospedaje in hospedajes %}
+            <tr>
+                <td>{{hospedaje.nombre_hospedaje}}</td>
+                <td>{{hospedaje.direccion_hospedaje}}</td>
+                <td>{{hospedaje.telefono_hospedaje}}</td>
+                <td>{{hospedaje.estrellas_hospedaje}}</td>
+                <td>{{hospedaje.departamento_hospedaje}}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock contenido-reporte %}

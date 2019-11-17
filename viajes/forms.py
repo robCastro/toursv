@@ -37,8 +37,16 @@ class DestinoForm(forms.Form):
 	departamento_destino = forms.ChoiceField(label='Departamento', choices=opcionesDepartamento)
 
 class HospedajeForm(forms.Form):
+	opcionesDepartamento = [
+		('Ahuachapan', 'Ahuachapan'), ('Cabañas', 'Cabañas'), ('Chalatenango', 'Chalatenango'),
+		('Cuscatlan', 'Cuscatlan'), ('La Libertad', 'La Libertad'), ('La Paz', 'La Paz'),
+		('La Union', 'La Union'), ('Morazan', 'Morazan'), ('San Miguel', 'San Miguel'),
+		('San Salvador', 'San Salvador'), ('San Vicente', 'San Vicente'), ('Santa Ana', 'Santa Ana'),
+		('Sonsonate', 'Sonsonate'), ('Usulutan', 'Usulutan')
+	]
 	telefonoValidator = RegexValidator(r'^\d{4}-\d{4}$', 'Usar formato 9999-9999.')
 	nombre_hospedaje = forms.CharField(label='Nombre', max_length=1024)
 	direccion_hospedaje = forms.CharField(label='Direccion', max_length=1024)
 	telefono_hospedaje = forms.CharField(label='Telefono', max_length=10, validators=[telefonoValidator])
 	estrellas_hospedaje = forms.IntegerField(label='Estrellas', min_value = 1, max_value=5)
+	departamento_hospedaje = forms.ChoiceField(label='Departamento', choices=opcionesDepartamento)
