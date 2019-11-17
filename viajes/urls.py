@@ -25,5 +25,12 @@ urlpatterns = [
     path('pdf_hospedajes/(<estrellas>)/(<departamento>)/',
 		views.RepControlHospedajes.as_view(),
 		name = 'pdf_hospedajes'
-	)
+	),
+
+    path('control_publicista/', views.controlPublicista, name='control_publicista'),
+    path('pdf_publicistas/(<fechaInicio>)/(<fechaFin>)/',
+		views.RepControlPublicistas.as_view(),
+		name = 'pdf_publicistas'
+	),
+
 ]

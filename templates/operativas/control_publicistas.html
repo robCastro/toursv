@@ -1,0 +1,77 @@
+{% extends 'base/base_tactica.html'%}
+
+{% block titulo %}Control de Guias{% endblock %}
+
+{% block main_content %}
+
+
+<div class="row">
+	
+</div>
+
+<div class="row">
+	<div class="col-md8">
+		<form method="post" action="{%url 'control_publicista'%}">
+		{% csrf_token %}
+		<table class="mx-3">
+			<tr>
+				<th><label for="fechaI">Excursiones desde</label></th>
+				<td><input type="date" name="fechaI" class="form-control" value="{{fechaInicio|date:'Y-m-d'}}" required=""></td>
+			</tr>
+			<tr>
+				<th><label for="fechaF">Y hasta</label></th>
+				<td><input type="date" name="fechaF" class="form-control" value="{{fechaFin|date:'Y-m-d'}}" required=""></td>
+			</tr>
+		</table>
+		<br>
+		<input type="submit" name="submit" value="Buscar">
+		<input type="submit" name="submit" value="Generar">
+		</form>
+	</div>
+	{% if errores %}
+	<div class="col-md4 mx-auto">
+		<div class="alert alert-warning alert-dismissible fade show" role="alert">
+			<strong>Error!</strong>
+			<ul>
+				{% for error in errores %}
+					<li>{{error}}</li>
+				{% endfor %}
+				
+			</ul>
+			<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+			</button>
+		</div>
+	</div>
+	{% endif %}
+</div>
+<br>
+{% if publicistas %}
+<br><br>
+<div class="row">
+	<h4>Publicista</h4>
+</div>
+<br>
+<div class="row">
+	<table class="table">
+		<tr>
+			<th>Nombre</th>
+			<th>Apellido</th>
+			<th>Promedio</th>
+			<th>Menor Nota</th>
+			<th>Mayor Nota</th>
+		</tr>
+		{% for publicista in publicistas %}
+			<tr>
+				<td>{{publicista.0}}</td>
+				<td>{{publicista.1}}</td>
+				<td>{{publicista.2|floatformat:"2"}}</td>
+				<td>{{publicista.3}}</td>
+				<td>{{publicista.4}}</td>
+			</tr>
+		{% endfor %}
+	</table>
+	<br>
+</div>
+{% endif %}
+{% endblock %}

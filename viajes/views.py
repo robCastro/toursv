@@ -12,6 +12,8 @@ def index(request):
 	context = {}
 	return render(request, 'base/base_estrategica.html', context)
 
+
+
 def registrarVehiculo(request):
 	msg = None
 	if request.method == 'POST':
@@ -258,4 +260,68 @@ def consultaHospedajes(departamento, estrellas):
 	if estrellas != "Todas":
 		hospedajes = hospedajes.filter(estrellas_hospedaje = estrellas)
 	return hospedajes
+
+
+
+def controlPublicista(request):
+	preview = True
+	fechaFin = datetime.now().date()
+	fechaInicio = fechaFin - timedelta(days=30)
+	publicistas = None
+	errores = []
+	if request.method == 'POST':
+		fechaInicio = datetime.strptime(request.POST['fechaI'], '%Y-%m-%d')
+		fechaFin = datetime.strptime(request.POST['fechaF'], '%Y-%m-%d')
+		if fechaInicio > fechaFin:
+			errores.append("Fecha de Inicio no puede ser mayor a Fecha de Fin")
+		else:
+			publicistas = consultaNotaPublicistas(fechaInicio, fechaFin)
+			if not publicistas:
+				errores.append("No hubieron excursiones entre las fechas indicadas")
+			if request.POST['submit'] == 'Generar' and publicistas:
+				preview = False
+	context = {
+		'fechaInicio': fechaInicio,
+		'fechaFin': fechaFin,
+		'publicistas': publicistas,
+		'errores': errores,
+	}
+	if preview:
+		return render(request, 'operativas/control_publicistas.html', context)
+	else:
+		return redirect('pdf_publicistas', request.POST['fechaI'], request.POST['fechaF'])
+
+class RepControlPublicistas(PDFTemplateView):
+	filename = 'control_publicistas.pdf'
+	template_name = 'operativas/reporte_publicistas.html'
+	show_content_in_browser=True
+	def get_context_data(self, **kwargs):
+		context = super(RepControlPublicistas, self).get_context_data(**kwargs)
+		fechaInicio = datetime.strptime(self.kwargs['fechaInicio'], '%Y-%m-%d')
+		fechaFin = datetime.strptime(self.kwargs['fechaFin'], '%Y-%m-%d')
+		context['fechaHoy'] = datetime.now().date()
+		context['fechaInicio'] = fechaInicio
+		context['fechaFin'] = fechaFin
+		context['publicistas'] = consultaNotaPublicistas(self.kwargs['fechaInicio'], self.kwargs['fechaFin'])
+		return context
+
+def consultaNotaPublicistas(fechaInicio, fechaFin):
+	with connection.cursor() as cursor:
+		cursor.execute("""
+    		select nombre_publiciste, apellido_publiciste, avg(nota_publiciste), min(nota_publiciste), max(nota_publiciste) 
+			from reservan
+			natural join excursion
+			natural join publicista
+			where 
+			fecha_inicio_excursion >= '{}' and
+			fecha_inicio_excursion <= '{}'
+			group by (nombre_publiciste, apellido_publiciste)
+			""".format(
+				fechaInicio,
+				fechaFin
+			)
+		)
+		return cursor.fetchall()
+
+
 

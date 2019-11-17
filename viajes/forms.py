@@ -16,7 +16,6 @@ class TransporteForm(forms.Form):
 	]
 	tipo = forms.ChoiceField(label='Tipo de Vehiculo', choices=opciones)
 
-
 class DestinoForm(forms.Form):
 	opcionesTipo = [
 		('Montaña', 'Montaña'),

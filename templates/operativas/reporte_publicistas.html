@@ -1,0 +1,36 @@
+{% extends "base/base_reporte.html" %}
+
+{% block titulo-reporte %}
+    Reporte de Guias
+{% endblock titulo-reporte %}
+
+{% block subtitulo-reporte %}
+    Generado el {{fechaHoy|date:"d-m-Y"}}.
+    <p class="texto-sub" style="text-align: center;">Desde el {{fechaInicio|date:"d-m-Y"}}, Hasta el {{fechaFin|date:"d-m-Y"}}</p>
+{% endblock subtitulo-reporte %}
+
+{% block contenido-reporte %}
+    
+    <table class="table" style="text-align: center">
+        <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Apellido</th>
+            <th>Promedio</th>
+            <th>Menor Nota</th>
+            <th>Mayor Nota</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for publicista in publicistas %}
+            <tr>
+                <td>{{publicista.0}}</td>
+                <td>{{publicista.1}}</td>
+                <td>{{publicista.2|floatformat:"2"}}</td>
+                <td>{{publicista.3}}</td>
+                <td>{{publicista.4}}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock contenido-reporte %}
