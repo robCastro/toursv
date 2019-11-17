@@ -4,15 +4,16 @@ from datetime import datetime, timedelta
 from django.db import connection
 from wkhtmltopdf.views import PDFTemplateView
 
-from .forms import TransporteForm
+from .forms import TransporteForm, DestinoForm
 
-from .models import Transporte
+from .models import Transporte, Destino
 
 def index(request):
 	context = {}
 	return render(request, 'base/base_estrategica.html', context)
 
 def registrarVehiculo(request):
+	msg = None
 	if request.method == 'POST':
 		form = TransporteForm(request.POST)
 		if form.is_valid():
@@ -21,19 +22,14 @@ def registrarVehiculo(request):
 				capacidad_transporte = form.cleaned_data['capacidad'],
 				tipo_transporte = form.cleaned_data['tipo']
 			)
-
+			msg = "Guardado correctamente"
 		else:
 			return HttpResponse('Error')
-			print("Invalid")
 	else:
 		form = TransporteForm()
-
-	for transporte in Transporte.objects.all():
-		print(transporte.placa_transporte)
-		print(transporte.capacidad_transporte)
-		print(transporte.tipo_transporte)
 	context = {
 		'form': form,
+		'msg': msg
 	}
 	return render(request, 'operativas/registrar_vehiculo.html', context)
 
@@ -52,8 +48,6 @@ def controlVehiculo(request):
 		else:
 			tipo = request.POST['tipo']
 			vehiculos = consultaVehiculosExcursiones(fechaInicio, fechaFin, tipo)
-			for vehiculo in vehiculos:
-				print (vehiculo[0])
 			if not vehiculos:
 				errores.append("No hay vehiculos para esta busqueda")
 			if request.POST['submit'] == 'Generar' and vehiculos:
@@ -68,7 +62,6 @@ def controlVehiculo(request):
 	if preview:
 		return render(request, 'operativas/control_vehiculos.html', context)
 	else:
-		print (fechaInicio)
 		return redirect('pdf_vehiculo', fechaInicio.date(), fechaFin.date(), tipo)
 		
 class RepControlVehiculos(PDFTemplateView):
@@ -84,9 +77,7 @@ class RepControlVehiculos(PDFTemplateView):
 		context['fechaInicio'] = fechaInicio
 		context['fechaFin'] = fechaFin
 		context['vehiculos'] = consultaVehiculosExcursiones(fechaInicio, fechaFin, tipo)
-		print(context['vehiculos'])
 		return context
-
 
 def consultaVehiculosExcursiones(fechaInicio, fechaFin, tipo):
 	with connection.cursor() as cursor:
@@ -106,3 +97,28 @@ def consultaVehiculosExcursiones(fechaInicio, fechaFin, tipo):
 			) 
 		)
 		return cursor.fetchall()
+
+
+
+def registrarDestino(request):
+	msg = None
+	if request.method == 'POST':
+		form = DestinoForm(request.POST)
+		if form.is_valid():
+			destino = Destino.objects.create(
+				nombre_destino = form.cleaned_data['nombre_destino'],
+				tipo_destino = form.cleaned_data['tipo_destino'],
+				departamento_destino = form.cleaned_data['departamento_destino'],
+				fecha_registro_destino = datetime.strftime(datetime.now().date(), '%Y-%m-%d')
+			)
+			msg = "Guardado correctamente"
+		else:
+			return HttpResponse('Error')
+	else:
+		form = DestinoForm()
+	context = {
+		'form': form,
+		'msg': msg
+	}
+	return render(request, 'operativas/registrar_destino.html', context)
+

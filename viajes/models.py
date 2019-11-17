@@ -18,6 +18,17 @@ class Cliente(models.Model):
         managed = False
         db_table = 'cliente'
 
+class Destino(models.Model):
+    id_destino = models.AutoField(primary_key=True)
+    nombre_destino = models.CharField(max_length=128)
+    tipo_destino = models.CharField(max_length=128)
+    departamento_destino = models.CharField(max_length=128)
+    fecha_registro_destino = models.DateField()
+
+    class Meta:
+        managed = False
+        db_table = 'destino'
+
 
 class Excursion(models.Model):
     id_excursion = models.AutoField(primary_key=True)
@@ -28,7 +39,7 @@ class Excursion(models.Model):
     fecha_inicio_excursion = models.DateField()
     fecha_fin_excursion = models.DateField()
     precio_excursion = models.DecimalField(max_digits=8, decimal_places=2, blank=True, null=True)
-
+    id_destino = models.ForeignKey(Destino, models.PROTECT, db_column='id_destino')
     class Meta:
         managed = False
         db_table = 'excursion'

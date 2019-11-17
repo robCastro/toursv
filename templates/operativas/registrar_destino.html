@@ -1,6 +1,6 @@
 {% extends 'base/base_operativa.html'%}
 
-{% block titulo %}Registro de Vehiculo{% endblock %}
+{% block titulo %}Registro de Destino{% endblock %}
 
 {% block main_content %}
 {% if msg %}
@@ -15,11 +15,11 @@
 {% endif %}
 <div class="row">
 	<div class="col-md-8">
-		<h4>Registro de Vehiculo</h4>
+		<h4>Registro de Destino</h4>
 		<br>
-		<form method="POST" action="{%url 'registrar_vehiculo'%}">
+		<form method="POST" action="{%url 'registrar_destino'%}">
 			{% csrf_token %}
-			<table class="ml-3">
+			<table class="ml-3 p-2">
 				{{form.as_table}}
 			</table>
 			<br>
