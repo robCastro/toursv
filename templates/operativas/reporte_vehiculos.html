@@ -1,0 +1,33 @@
+{% extends "base/base_reporte.html" %}
+
+{% block titulo-reporte %}
+    Reporte de Control de Vehiculos
+{% endblock titulo-reporte %}
+
+{% block subtitulo-reporte %}
+    Generado el {{fechaHoy|date:"d-m-Y"}}.
+{% endblock subtitulo-reporte %}
+
+{% block contenido-reporte %}
+    <table class="table" style="text-align: center">
+        <thead>
+        <tr>
+            <th>Placa</th>
+            <th>Salida</th>
+            <th>Retorno</th>
+            <th>Hospedaje</th>
+            <th>Direccion</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for vehiculo in vehiculos %}
+            <tr>
+                <td>{{vehiculo.0}}</td>
+                <td>{{vehiculo.1|date:"d-m-Y"}}</td>
+                <td>{{vehiculo.2|date:"d-m-Y"}}</td>
+                <td>{{vehiculo.3}}</td>
+                <td>{{vehiculo.4}}</td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endblock contenido-reporte %}

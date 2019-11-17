@@ -1,7 +1,8 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from datetime import datetime, timedelta
 from django.db import connection
+from wkhtmltopdf.views import PDFTemplateView
 
 from .forms import TransporteForm
 
@@ -37,13 +38,13 @@ def registrarVehiculo(request):
 	return render(request, 'operativas/registrar_vehiculo.html', context)
 
 def controlVehiculo(request):
-	fechaFin = datetime.today()
+	preview = True
+	fechaFin = datetime.now().date()
 	fechaInicio = fechaFin - timedelta(days=30)
 	tipo = "Sedan"
 	vehiculos = None
 	errores = []
 	if request.method == 'POST':
-		print(request.POST)
 		fechaInicio = datetime.strptime(request.POST['fechaI'], '%Y-%m-%d')
 		fechaFin = datetime.strptime(request.POST['fechaF'], '%Y-%m-%d')
 		if fechaInicio > fechaFin:
@@ -51,10 +52,12 @@ def controlVehiculo(request):
 		else:
 			tipo = request.POST['tipo']
 			vehiculos = consultaVehiculosExcursiones(fechaInicio, fechaFin, tipo)
+			for vehiculo in vehiculos:
+				print (vehiculo[0])
 			if not vehiculos:
 				errores.append("No hay vehiculos para esta busqueda")
 			if request.POST['submit'] == 'Generar' and vehiculos:
-				print ('TO DO PDF')
+				preview = False
 	context = {
 		'fechaInicio': fechaInicio,
 		'fechaFin': fechaFin,
@@ -62,7 +65,28 @@ def controlVehiculo(request):
 		'vehiculos': vehiculos,
 		'errores': errores,
 	}
-	return render(request, 'operativas/control_vehiculos.html', context)
+	if preview:
+		return render(request, 'operativas/control_vehiculos.html', context)
+	else:
+		print (fechaInicio)
+		return redirect('pdf_vehiculo', fechaInicio.date(), fechaFin.date(), tipo)
+		
+class RepControlVehiculos(PDFTemplateView):
+	filename = 'control_vehiculos.pdf'
+	template_name = 'operativas/reporte_vehiculos.html'
+	show_content_in_browser=True
+	def get_context_data(self, **kwargs):
+		context = super(RepControlVehiculos, self).get_context_data(**kwargs)
+		fechaInicio = datetime.strptime(self.kwargs['fechaInicio'], '%Y-%m-%d')
+		fechaFin = datetime.strptime(self.kwargs['fechaFin'], '%Y-%m-%d')
+		tipo = self.kwargs['tipo']
+		context['fechaHoy'] = datetime.now().date()
+		context['fechaInicio'] = fechaInicio
+		context['fechaFin'] = fechaFin
+		context['vehiculos'] = consultaVehiculosExcursiones(fechaInicio, fechaFin, tipo)
+		print(context['vehiculos'])
+		return context
+
 
 def consultaVehiculosExcursiones(fechaInicio, fechaFin, tipo):
 	with connection.cursor() as cursor:
