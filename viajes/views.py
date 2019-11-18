@@ -3,17 +3,31 @@ from django.http import HttpResponse
 from datetime import datetime, timedelta
 from django.db import connection
 from wkhtmltopdf.views import PDFTemplateView
+from django.contrib.auth.decorators import login_required
 
 from .forms import TransporteForm, DestinoForm, HospedajeForm
 
 from .models import Transporte, Destino, Hospedaje
 
+@login_required
 def index(request):
+	if request.user.groups.filter(name="operativo").exists():
+		request.session['base'] = 'base/base_operativa.html'
+		return redirect('control_vehiculos')
+	elif request.user.groups.filter(name="tactico").exists():
+		request.session['base'] = 'base/base_tactica.html'
+		return redirect('control_publicista')
+	elif request.user.groups.filter(name="estrategico").exists():
+		request.session['base'] = 'base/base_estrategica.html'
+		return redirect('control_fecha')
+	else:
+		return redirect('/admin/')
+
+def forbbiden(request):
 	context = {}
-	return render(request, 'base/base_estrategica.html', context)
+	return render(request, '403.html', context)
 
-
-
+@login_required
 def registrarVehiculo(request):
 	msg = None
 	if request.method == 'POST':
@@ -35,7 +49,9 @@ def registrarVehiculo(request):
 	}
 	return render(request, 'operativas/registrar_vehiculo.html', context)
 
+@login_required(login_url = '')
 def controlVehiculo(request):
+	print(request.user)
 	preview = True
 	fechaFin = datetime.now().date()
 	fechaInicio = fechaFin - timedelta(days=30)
@@ -65,7 +81,7 @@ def controlVehiculo(request):
 		return render(request, 'operativas/control_vehiculos.html', context)
 	else:
 		return redirect('pdf_vehiculo', fechaInicio.date(), fechaFin.date(), tipo)
-		
+
 class RepControlVehiculos(PDFTemplateView):
 	filename = 'control_vehiculos.pdf'
 	template_name = 'operativas/reporte_vehiculos.html'
@@ -81,6 +97,7 @@ class RepControlVehiculos(PDFTemplateView):
 		context['tipo'] = tipo
 		context['vehiculos'] = consultaVehiculosExcursiones(fechaInicio, fechaFin, tipo)
 		return context
+
 
 def consultaVehiculosExcursiones(fechaInicio, fechaFin, tipo):
 	with connection.cursor() as cursor:
@@ -102,7 +119,7 @@ def consultaVehiculosExcursiones(fechaInicio, fechaFin, tipo):
 		return cursor.fetchall()
 
 
-
+@login_required
 def registrarDestino(request):
 	msg = None
 	if request.method == 'POST':
@@ -125,6 +142,7 @@ def registrarDestino(request):
 	}
 	return render(request, 'operativas/registrar_destino.html', context)
 
+@login_required
 def controlDestino(request):
 	preview = True
 	fechaFin = datetime.now().date()
@@ -159,6 +177,7 @@ def controlDestino(request):
 	else:
 		return redirect('pdf_destinos', fechaInicio.date(), fechaFin.date(), tipo, departamento)
 
+
 class RepControlDestinos(PDFTemplateView):
 	filename = 'control_destinos.pdf'
 	template_name = 'operativas/reporte_destinos.html'
@@ -177,6 +196,7 @@ class RepControlDestinos(PDFTemplateView):
 		context['destinos'] = consultaDestinos(fechaInicio, fechaFin, tipo, departamento)
 		return context
 
+
 def consultaDestinos(fechaInicio, fechaFin, tipo, departamento):
 	if tipo == "Todos":
 		tipo = None
@@ -192,7 +212,7 @@ def consultaDestinos(fechaInicio, fechaFin, tipo, departamento):
 	return destinos
 
 
-
+@login_required
 def registrarHospedaje(request):
 	msg = None
 	if request.method == 'POST':
@@ -214,6 +234,7 @@ def registrarHospedaje(request):
 	}
 	return render(request, 'operativas/registrar_hospedaje.html', context)
 
+@login_required
 def controlHospedaje(request):
 	preview = True
 	estrellas = "5"
@@ -239,6 +260,7 @@ def controlHospedaje(request):
 	else:
 		return redirect('pdf_hospedajes', estrellas, departamento)
 
+
 class RepControlHospedajes(PDFTemplateView):
 	filename = 'control_hospedajes.pdf'
 	template_name = 'operativas/reporte_hospedajes.html'
@@ -253,6 +275,7 @@ class RepControlHospedajes(PDFTemplateView):
 		context['hospedajes'] = consultaHospedajes(departamento, estrellas)
 		return context
 
+
 def consultaHospedajes(departamento, estrellas):
 	hospedajes = Hospedaje.objects.all()
 	if departamento != "Todos":
@@ -263,7 +286,10 @@ def consultaHospedajes(departamento, estrellas):
 
 
 
+@login_required
 def controlPublicista(request):
+	if not request.user.groups.filter(name="tactico").exists() and not request.user.groups.filter(name="estrategico").exists():
+		return redirect('forbbiden')
 	preview = True
 	fechaFin = datetime.now().date()
 	fechaInicio = fechaFin - timedelta(days=30)
@@ -291,6 +317,7 @@ def controlPublicista(request):
 	else:
 		return redirect('pdf_publicistas', request.POST['fechaI'], request.POST['fechaF'])
 
+
 class RepControlPublicistas(PDFTemplateView):
 	filename = 'control_publicistas.pdf'
 	template_name = 'operativas/reporte_publicistas.html'
@@ -304,6 +331,7 @@ class RepControlPublicistas(PDFTemplateView):
 		context['fechaFin'] = fechaFin
 		context['publicistas'] = consultaNotaPublicistas(self.kwargs['fechaInicio'], self.kwargs['fechaFin'])
 		return context
+
 
 def consultaNotaPublicistas(fechaInicio, fechaFin):
 	with connection.cursor() as cursor:
@@ -325,7 +353,10 @@ def consultaNotaPublicistas(fechaInicio, fechaFin):
 
 
 
+@login_required
 def controlFechaDestino(request):
+	if not request.user.groups.filter(name="estrategico").exists():
+		return redirect('forbbiden')
 	preview = True
 	fechaFin = datetime.now().date()
 	fechaInicio = fechaFin - timedelta(days=90)
@@ -352,6 +383,7 @@ def controlFechaDestino(request):
 		return render(request, 'operativas/control_fechas.html', context)
 	else:
 		return redirect('pdf_fechas', request.POST['fechaI'], request.POST['fechaF'])
+
 		
 class RepControlFechaDestino(PDFTemplateView):
 	filename = 'control_fechas.pdf'
@@ -366,6 +398,7 @@ class RepControlFechaDestino(PDFTemplateView):
 		context['fechaFin'] = fechaFin
 		context['destinos'] = consultaFechaDestino(fechaInicio, fechaFin)
 		return context
+
 
 def consultaFechaDestino(fechaInicio, fechaFin):
 	with connection.cursor() as cursor:
